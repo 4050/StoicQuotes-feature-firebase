@@ -1,0 +1,1 @@
+export 'package:stoic_quotes_app/repositories/quote_repository/quote_repository.dart';
