@@ -1,5 +1,7 @@
 import 'package:stoic_quotes_app/view/view.dart';
 
 final routes = {
-        '/': (context) => const QuoteScreen()
+        '/': (context) => const HomeScreen(),
+        '/diary': (context) => DiaryScreen(),
+        '/settings': (context) => SettingsScreen()
       };

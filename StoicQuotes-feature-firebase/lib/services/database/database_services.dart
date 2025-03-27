@@ -7,8 +7,15 @@ class DatabaseService {
 
   factory DatabaseService() => _instance;
 
+  // Коллекция для цитат
   final CollectionReference firebaseQuotesCollection =
       FirebaseFirestore.instance.collection('quotes');
+
+  // Коллекция для записей дневника
+  final CollectionReference firebaseDiaryCollection =
+      FirebaseFirestore.instance.collection('diary_notes');
+
+  // ==================== Работа с цитатами ====================
 
   // Добавление или обновление цитаты
   Future<void> insertQuote(Quote quote, {bool isFavorite = false}) async {
@@ -36,7 +43,7 @@ class DatabaseService {
   Future<List<Quote>> getFavoriteQuotes() async {
     try {
       QuerySnapshot snapshot = await firebaseQuotesCollection
-          .where('isFavorite', isEqualTo: true) // Фильтрация по избранным
+          .where('isFavorite', isEqualTo: true)
           .get();
 
       return snapshot.docs.map((doc) {
@@ -60,6 +67,31 @@ class DatabaseService {
       });
     } catch (e) {
       print('Ошибка при обновлении статуса избранного: $e');
+    }
+  }
+
+  // ==================== Работа с записями дневника ====================
+
+  // Добавление записи в дневник
+  Future<void> insertDiaryEntry(Diary diaryEntry) async {
+    try {
+      await firebaseDiaryCollection.add({
+        'text': diaryEntry.text,
+        'tags': diaryEntry.tags,
+        // Если diaryEntry.timestamp имеет тип DateTime, то можно использовать:
+        'timestamp': Timestamp.fromDate(diaryEntry.timestamp),
+      });
+    } catch (e) {
+      print('Ошибка при добавлении записи в дневник: $e');
+    }
+  }
+
+  // Удаление записи из дневника по её documentId
+  Future<void> deleteDiaryEntry(String diaryEntryId) async {
+    try {
+      await firebaseDiaryCollection.doc(diaryEntryId).delete();
+    } catch (e) {
+      print('Ошибка при удалении записи из дневника: $e');
     }
   }
 }

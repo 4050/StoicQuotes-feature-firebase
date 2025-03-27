@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:stoic_quotes_app/services/services.dart';
 import 'package:stoic_quotes_app/models/models.dart';
 import 'package:stoic_quotes_app/main.dart';
+import 'package:stoic_quotes_app/view/view.dart';
+
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -37,7 +38,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final modalRoute = ModalRoute.of(context);
     if (modalRoute is PageRoute) {
       routeObserver.subscribe(this, modalRoute);
@@ -56,47 +56,24 @@ class _FavoritesScreenState extends State<FavoritesScreen> with RouteAware {
   }
 
   Future<void> confirmDelete(Quote quote) async {
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-
-    final confirmed = isIOS
-        ? await showCupertinoDialog<bool>(
-            context: context,
-            builder: (context) => CupertinoAlertDialog(
-              title: const Text("Удалить цитату?"),
-              content: const Text("Вы уверены, что хотите удалить эту цитату?"),
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text("Отмена"),
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-                CupertinoDialogAction(
-                  isDestructiveAction: true,
-                  child: const Text("Удалить"),
-                  onPressed: () => Navigator.pop(context, true),
-                ),
-              ],
-            ),
-          )
-        : await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text("Удалить цитату?"),
-              content: const Text("Вы уверены, что хотите удалить эту цитату?"),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text("Отмена"),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.red,
-                  ),
-                  child: const Text("Удалить"),
-                ),
-              ],
-            ),
-          );
+    final confirmed = await showCupertinoDialog<bool>(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text("Удалить цитату?"),
+        content: const Text("Вы уверены, что хотите удалить эту цитату?"),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text("Отмена"),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            child: const Text("Удалить"),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
+      ),
+    );
 
     if (confirmed ?? false) {
       await deleteFavorite(quote);
@@ -112,38 +89,25 @@ class _FavoritesScreenState extends State<FavoritesScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-
-    return isIOS
-        ? CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              middle: const Text("Избранное"),
-              trailing: CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: loadFavorites,
-                child: const Icon(CupertinoIcons.refresh, size: 28),
-              ),
-            ),
-            child: buildContent(isIOS),
-          )
-        : Scaffold(
-            appBar: AppBar(
-              title: const Text("Избранное"),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: loadFavorites,
-                ),
-              ],
-            ),
-            body: buildContent(isIOS),
-          );
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text("Избранное"),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: loadFavorites,
+          child: const Icon(CupertinoIcons.refresh, size: 28),
+        ),
+      ),
+      child: SafeArea(
+        child: _buildContent(),
+      ),
+    );
   }
 
-  Widget buildContent(bool isIOS) {
+  Widget _buildContent() {
     if (isLoading) {
       return const Center(
-        child: CircularProgressIndicator(), // Используем ProgressIndicator для Android
+        child: CupertinoActivityIndicator(),
       );
     }
 
@@ -153,61 +117,55 @@ class _FavoritesScreenState extends State<FavoritesScreen> with RouteAware {
           "Список избранных цитат пуст",
           style: TextStyle(
             fontSize: 18,
-            color: Colors.grey,
+            color: CupertinoColors.inactiveGray,
           ),
           textAlign: TextAlign.center,
         ),
       );
     }
 
-    return ListView.builder(
-      itemCount: favoriteQuotes.length,
-      itemBuilder: (context, index) {
-        final quote = favoriteQuotes[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8.0,
-            horizontal: 16.0,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      quote.text,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      "- ${quote.author}",
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+    return CupertinoScrollbar(
+      child: ListView.builder(
+        itemCount: favoriteQuotes.length,
+        itemBuilder: (context, index) {
+          final quote = favoriteQuotes[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) => QuoteDetailScreen(quote: quote),
                 ),
+              );
+            },
+          child: CupertinoListTile(
+            title: Text(
+              quote.text,
+              style: const TextStyle(
+                fontSize: 18,
+                fontStyle: FontStyle.italic,
               ),
-              IconButton(
-                icon: Icon(
-                  isIOS ? CupertinoIcons.delete : Icons.delete,
-                  color: Colors.red,
-                  size: 28,
-                ),
-                onPressed: () async {
-                  await confirmDelete(quote);
-                },
+            ),
+            subtitle: Text(
+              "- ${quote.author}",
+              style: const TextStyle(
+                fontSize: 14,
+                color: CupertinoColors.inactiveGray,
               ),
-            ],
-          ),
-        );
-      },
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+            trailing: CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () => confirmDelete(quote),
+              child: const Icon(
+                CupertinoIcons.trash,
+                color: CupertinoColors.destructiveRed,
+              ),
+            ),
+           ),
+          );
+        },
+      ),
     );
   }
 }

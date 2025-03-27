@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "StoicQuotes-feature-firebase",
+            "cwd": "StoicQuotes-feature-firebase",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "StoicQuotes-feature-firebase (profile mode)",
+            "cwd": "StoicQuotes-feature-firebase",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "StoicQuotes-feature-firebase (release mode)",
+            "cwd": "StoicQuotes-feature-firebase",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

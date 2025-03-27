@@ -126,7 +126,11 @@ class _QuoteScreenState extends State<QuoteScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         borderRadius: BorderRadius.circular(30),
                         onPressed: saveQuote,
-                        child: const Text("Save Quote"),
+                        child: const Text("Save Quote",
+                        style: TextStyle(
+                          color: CupertinoColors.white,
+                          ),
+                        ),
                       ),
                   ),
                 ],
