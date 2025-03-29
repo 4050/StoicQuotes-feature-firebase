@@ -94,6 +94,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
               Diary diary = Diary(
                 text: noteText,
                 timestamp: timestamp,
+                tags: List<String>.from(note['tags'] ?? []),
               );
 
               return CupertinoListTile(
@@ -103,9 +104,35 @@ class _DiaryScreenState extends State<DiaryScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                subtitle: Text(
-                  formattedDate,
-                  style: const TextStyle(fontSize: 14.0, color: CupertinoColors.inactiveGray),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      formattedDate,
+                      style: const TextStyle(fontSize: 14.0, color: CupertinoColors.inactiveGray),
+                    ),
+                    if (diary.tags.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Wrap(
+                        spacing: 4.0,
+                        runSpacing: 4.0,
+                        children: diary.tags.map((tag) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                          decoration: BoxDecoration(
+                            color: CupertinoColors.systemGrey5,
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: Text(
+                            tag,
+                            style: const TextStyle(
+                              fontSize: 12.0,
+                              color: CupertinoColors.systemGrey,
+                            ),
+                          ),
+                        )).toList(),
+                      ),
+                    ],
+                  ],
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                 trailing: CupertinoButton(

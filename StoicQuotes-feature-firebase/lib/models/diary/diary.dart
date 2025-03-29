@@ -14,8 +14,18 @@ class Diary {
   // Метод для создания объекта из JSON
   factory Diary.fromJson(Map<String, dynamic> json) {
     return Diary(
-      text: json['q'] ?? 'Нет данных',
+      text: json['text'] ?? 'Нет данных',
       timestamp: (json['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      tags: List<String>.from(json['tags'] ?? []),
     );
+  }
+
+  // Метод для преобразования объекта в JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'text': text,
+      'timestamp': Timestamp.fromDate(timestamp),
+      'tags': tags,
+    };
   }
 }

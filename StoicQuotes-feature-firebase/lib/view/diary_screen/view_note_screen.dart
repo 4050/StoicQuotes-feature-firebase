@@ -9,6 +9,30 @@ class ViewNoteScreen extends StatelessWidget {
 
   const ViewNoteScreen({super.key, required this.note});
 
+  Widget _buildTags() {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 8.0,
+      children: note.tags.map((tag) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+        decoration: BoxDecoration(
+          color: Platform.isIOS 
+              ? CupertinoColors.systemGrey5 
+              : Colors.grey[200],
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        child: Text(
+          tag,
+          style: TextStyle(
+            color: Platform.isIOS 
+                ? CupertinoColors.black 
+                : Colors.black87,
+          ),
+        ),
+      )).toList(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (Platform.isIOS) {
@@ -22,7 +46,7 @@ class ViewNoteScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,6 +60,18 @@ class ViewNoteScreen extends StatelessWidget {
                   formattedDate,
                   style: const TextStyle(fontSize: 14.0, color: CupertinoColors.inactiveGray),
                 ),
+                if (note.tags.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Теги:',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildTags(),
+                ],
               ],
             ),
           ),
@@ -47,7 +83,7 @@ class ViewNoteScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Заметка'),
         ),
-        body: Padding(
+        body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,6 +97,18 @@ class ViewNoteScreen extends StatelessWidget {
                 formattedDate,
                 style: const TextStyle(fontSize: 14.0, color: Colors.grey),
               ),
+              if (note.tags.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  'Теги:',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildTags(),
+              ],
             ],
           ),
         ),

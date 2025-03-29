@@ -116,8 +116,8 @@ Widget build(BuildContext context) {
                 children: [
                   CupertinoButton(
                     padding: EdgeInsets.zero,
-                    child: const Icon(CupertinoIcons.tag),
                     onPressed: _showTagDialog,
+                    child: const Icon(CupertinoIcons.tag),
                   ),
                 ],
               ),
