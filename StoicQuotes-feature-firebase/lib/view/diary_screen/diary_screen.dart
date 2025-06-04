@@ -2,8 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:stoic_quotes_app/services/services.dart';
-import 'add_note_screen.dart';
-import 'view_note_screen.dart';
+import 'package:stoic_quotes_app/view/view.dart';
 import 'package:stoic_quotes_app/models/models.dart';
 
 class DiaryScreen extends StatefulWidget {
@@ -92,6 +91,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
               String noteText = note['text'];
 
               Diary diary = Diary(
+                id: note.id,
                 text: noteText,
                 timestamp: timestamp,
                 tags: List<String>.from(note['tags'] ?? []),

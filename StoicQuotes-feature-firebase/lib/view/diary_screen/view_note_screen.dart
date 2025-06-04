@@ -1,32 +1,56 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stoic_quotes_app/models/models.dart';
+import 'package:stoic_quotes_app/view/view.dart';
 
-class ViewNoteScreen extends StatelessWidget {
+
+class ViewNoteScreen extends StatefulWidget {
   final Diary note;
 
   const ViewNoteScreen({super.key, required this.note});
+
+  @override
+  _ViewNoteScreenState createState() => _ViewNoteScreenState();
+}
+
+class _ViewNoteScreenState extends State<ViewNoteScreen> {
+  late Diary _note;
+
+  @override
+  void initState() {
+    super.initState();
+    _note = widget.note;
+  }
+
+  Future<void> _editNote() async {
+    final updatedNote = await Navigator.push<Diary>(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => EditNoteScreen(note: _note),
+      ),
+    );
+
+    if (updatedNote != null) {
+      setState(() {
+        _note = updatedNote;
+      });
+    }
+  }
 
   Widget _buildTags() {
     return Wrap(
       spacing: 8.0,
       runSpacing: 8.0,
-      children: note.tags.map((tag) => Container(
+      children: _note.tags.map((tag) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
         decoration: BoxDecoration(
-          color: Platform.isIOS 
-              ? CupertinoColors.systemGrey5 
-              : Colors.grey[200],
+          color: CupertinoColors.systemGrey5,
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Text(
           tag,
-          style: TextStyle(
-            color: Platform.isIOS 
-                ? CupertinoColors.black 
-                : Colors.black87,
+          style: const TextStyle(
+            color: CupertinoColors.black,
           ),
         ),
       )).toList(),
@@ -35,69 +59,33 @@ class ViewNoteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isIOS) {
-      String formattedDate = DateFormat('EEEE, d MMMM').format(note.timestamp);
-      return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: const Text('Заметка'),
-          leading: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(CupertinoIcons.back),
-          ),
+    String formattedDate = DateFormat('EEEE, d MMMM').format(_note.timestamp);
+
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: const Text('Заметка'),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: _editNote,
+          child: const Icon(CupertinoIcons.pencil),
         ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  note.text,
-                  style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  formattedDate,
-                  style: const TextStyle(fontSize: 14.0, color: CupertinoColors.inactiveGray),
-                ),
-                if (note.tags.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Теги:',
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildTags(),
-                ],
-              ],
-            ),
-          ),
-        ),
-      );
-    } else {
-      String formattedDate = DateFormat('EEEE, d MMMM').format(note.timestamp);
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Заметка'),
-        ),
-        body: SingleChildScrollView(
+      ),
+      child: SafeArea(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                note.text,
+                _note.text,
                 style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400),
               ),
               const SizedBox(height: 10),
               Text(
                 formattedDate,
-                style: const TextStyle(fontSize: 14.0, color: Colors.grey),
+                style: const TextStyle(fontSize: 14.0, color: CupertinoColors.inactiveGray),
               ),
-              if (note.tags.isNotEmpty) ...[
+              if (_note.tags.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 const Text(
                   'Теги:',
@@ -112,7 +100,7 @@ class ViewNoteScreen extends StatelessWidget {
             ],
           ),
         ),
-      );
-    }
+      ),
+    );
   }
 }

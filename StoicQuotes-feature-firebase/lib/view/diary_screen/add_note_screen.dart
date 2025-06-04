@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:stoic_quotes_app/services/services.dart';
 import 'package:stoic_quotes_app/models/models.dart';
@@ -19,9 +18,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   Future<void> _addNote() async {
     if (_controller.text.trim().isNotEmpty) {
       final diary = Diary(
+        id: '',
         text: _controller.text,
         tags: _tags, // Добавляем теги
-        timestamp: DateTime.now(),
+        timestamp: DateTime.now(), 
       );
       await DatabaseService().insertDiaryEntry(diary);
       Navigator.pop(context);

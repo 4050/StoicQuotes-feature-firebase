@@ -73,19 +73,42 @@ class DatabaseService {
   // ==================== Работа с записями дневника ====================
 
   // Добавление записи в дневник
-  Future<void> insertDiaryEntry(Diary diaryEntry) async {
-    try {
-      await firebaseDiaryCollection.add({
-        'text': diaryEntry.text,
-        'tags': diaryEntry.tags,
-        // Если diaryEntry.timestamp имеет тип DateTime, то можно использовать:
-        'timestamp': Timestamp.fromDate(diaryEntry.timestamp),
-      });
-    } catch (e) {
-      print('Ошибка при добавлении записи в дневник: $e');
-    }
-  }
+Future<Diary> insertDiaryEntry(Diary diaryEntry) async {
+  try {
+    DocumentReference docRef = firebaseDiaryCollection.doc();
 
+    await docRef.set({
+      'text': diaryEntry.text,
+      'tags': diaryEntry.tags,
+      'timestamp': Timestamp.fromDate(diaryEntry.timestamp),
+    });
+
+    final savedEntry = diaryEntry.copyWith(); // копия с теми же полями
+    return Diary(
+      id: docRef.id,
+      text: savedEntry.text,
+      tags: savedEntry.tags,
+      timestamp: savedEntry.timestamp,
+    );
+  } catch (e) {
+    print('Ошибка при добавлении записи в дневник: $e');
+    rethrow;
+  }
+}
+
+// Обновление записи в дневник
+  Future<void> updateDiaryEntry(Diary diaryEntry) async {
+  try {
+    // Используем `doc(diaryEntry.id)` для обновления записи по её ID
+    await firebaseDiaryCollection.doc(diaryEntry.id).update({
+      'text': diaryEntry.text,
+      'tags': diaryEntry.tags,
+      'timestamp': Timestamp.fromDate(diaryEntry.timestamp),
+    });
+  } catch (e) {
+    print('Ошибка при обновлении записи в дневнике: $e');
+  }
+}
   // Удаление записи из дневника по её documentId
   Future<void> deleteDiaryEntry(String diaryEntryId) async {
     try {
