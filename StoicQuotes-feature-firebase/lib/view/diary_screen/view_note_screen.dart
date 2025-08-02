@@ -38,6 +38,13 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
   }
 
   Widget _buildTags() {
+    if (_note.tags.isEmpty) {
+      return const Text(
+        'Нет тегов',
+        style: TextStyle(color: CupertinoColors.systemGrey),
+      );
+    }
+    
     return Wrap(
       spacing: 8.0,
       runSpacing: 8.0,
@@ -50,7 +57,8 @@ class _ViewNoteScreenState extends State<ViewNoteScreen> {
         child: Text(
           tag,
           style: const TextStyle(
-            color: CupertinoColors.black,
+            color: CupertinoColors.systemGrey,
+            fontSize: 14,
           ),
         ),
       )).toList(),

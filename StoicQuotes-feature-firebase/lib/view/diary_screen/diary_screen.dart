@@ -30,6 +30,29 @@ class _DiaryScreenState extends State<DiaryScreen> {
     );
   }
 
+  Widget _buildTagsList(List<String> tags) {
+    if (tags.isEmpty) return const SizedBox.shrink();
+
+    return Wrap(
+      spacing: 4,
+      runSpacing: 4,
+      children: tags.map((tag) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: CupertinoColors.systemGrey6,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          '#$tag',
+          style: const TextStyle(
+            fontSize: 12,
+            color: CupertinoColors.systemGrey,
+          ),
+        ),
+      )).toList(),
+    );
+  }
+
   Future<void> _confirmDelete(String id) async {
     final confirmed = await showCupertinoDialog<bool>(
       context: context,
@@ -113,24 +136,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                     ),
                     if (diary.tags.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      Wrap(
-                        spacing: 4.0,
-                        runSpacing: 4.0,
-                        children: diary.tags.map((tag) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                          decoration: BoxDecoration(
-                            color: CupertinoColors.systemGrey5,
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: Text(
-                            tag,
-                            style: const TextStyle(
-                              fontSize: 12.0,
-                              color: CupertinoColors.systemGrey,
-                            ),
-                          ),
-                        )).toList(),
-                      ),
+                      _buildTagsList(diary.tags),
                     ],
                   ],
                 ),
@@ -157,8 +163,9 @@ class _DiaryScreenState extends State<DiaryScreen> {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: const Text('Дневник'),
-        trailing: GestureDetector(
-          onTap: _navigateToAddNoteScreen,
+        trailing: CupertinoButton(
+          padding: EdgeInsets.zero,
+          onPressed: _navigateToAddNoteScreen,
           child: const Icon(CupertinoIcons.add),
         ),
       ),

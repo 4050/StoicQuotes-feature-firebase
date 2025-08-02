@@ -42,7 +42,7 @@ class Diary {
       id: id, // ID остается неизменным
       text: text ?? this.text,
       timestamp: timestamp ?? this.timestamp,
-      tags: tags ?? this.tags,
+      tags: tags ?? List<String>.from(this.tags),
     );
   }
 }
